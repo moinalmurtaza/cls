@@ -216,16 +216,19 @@ class _RegisterScreenState extends State<RegisterScreen> with SingleTickerProvid
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
               child: Container(
+                padding: const EdgeInsets.all(4), // Add inner padding
                 decoration: BoxDecoration(
                   color: AppTheme.surfaceColor,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(30), // Fully rounded pill shape
                 ),
                 child: TabBar(
                   controller: _tabController,
+                  dividerColor: Colors.transparent, // Remove imperfect bottom line
+                  indicatorSize: TabBarIndicatorSize.tab,
                   indicator: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(30), // Fully rounded pill shape
                     color: AppTheme.primaryColor,
                   ),
                   labelColor: Colors.white,

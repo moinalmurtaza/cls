@@ -1,27 +1,31 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_theme.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class TeacherLoginScreen extends StatefulWidget {
+  const TeacherLoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<TeacherLoginScreen> createState() => _TeacherLoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _TeacherLoginScreenState extends State<TeacherLoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
 
   void _handleLogin() {
-    String email = _emailController.text.trim().toLowerCase();
-    // Student login only here since Teacher login is a separate page now
-    Navigator.pushReplacementNamed(context, '/student_dashboard');
+    // Simple mock logic for frontend demonstration
+    Navigator.pushReplacementNamed(context, '/teacher_dashboard');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Teacher Login'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -31,19 +35,19 @@ class _LoginScreenState extends State<LoginScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const Icon(
-                  Icons.person_rounded,
+                  Icons.school_rounded,
                   size: 80,
                   color: AppTheme.primaryColor,
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  'Student Login',
+                  'Teacher Portal',
                   style: Theme.of(context).textTheme.displayMedium,
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Log in to continue to Smart Attendance',
+                  'Log in with your teacher credentials',
                   style: Theme.of(context).textTheme.bodyMedium,
                   textAlign: TextAlign.center,
                 ),
@@ -51,7 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 TextField(
                   controller: _emailController,
                   decoration: const InputDecoration(
-                    labelText: 'Student Email',
+                    labelText: 'Teacher Email',
                     prefixIcon: Icon(Icons.email_outlined),
                   ),
                   keyboardType: TextInputType.emailAddress,
@@ -90,28 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: _handleLogin,
-                  child: const Text('Log In as Student', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                ),
-                const SizedBox(height: 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text('Don\'t have an account?', style: TextStyle(color: Colors.white70)),
-                    TextButton(
-                      onPressed: () => Navigator.pushNamed(context, '/register'),
-                      child: const Text('Register', style: TextStyle(color: AppTheme.primaryColor, fontWeight: FontWeight.bold)),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                const Divider(),
-                const SizedBox(height: 16),
-                TextButton(
-                  onPressed: () => Navigator.pushNamed(context, '/teacher_login'),
-                  child: const Text(
-                    'Login as a Teacher',
-                    style: TextStyle(color: Colors.white70, decoration: TextDecoration.underline),
-                  ),
+                  child: const Text('Log In as Teacher', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 ),
               ],
             ),

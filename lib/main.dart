@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'theme/app_theme.dart';
 import 'screens/splash_screen.dart';
 import 'screens/auth/login_screen.dart';
+import 'screens/auth/teacher_login_screen.dart';
 import 'screens/auth/register_screen.dart';
 import 'screens/student/student_dashboard.dart';
 import 'screens/student/update_info_screen.dart';
@@ -26,6 +27,7 @@ class SmartAttendanceApp extends StatelessWidget {
       routes: {
         '/': (context) => const SplashScreen(),
         '/login': (context) => const LoginScreen(),
+        '/teacher_login': (context) => const TeacherLoginScreen(),
         '/register': (context) => const RegisterScreen(),
         '/student_dashboard': (context) => const StudentDashboard(),
         '/student_update_info': (context) => const UpdateInfoScreen(),
