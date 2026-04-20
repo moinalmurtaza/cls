@@ -1,24 +1,24 @@
 # 📱 Smart Attendance & Student Management System
 
-A modern, AI-ready mobile application built with **Flutter** to streamline classroom attendance and student records. The system utilizes face recognition concepts to automate the attendance process and maintain accurate semester logs.
+A modern, AI-integrated mobile application built with **Flutter** to streamline classroom attendance and student records. The system utilizes face recognition concepts and a robust **Firebase** backend to automate attendance and maintain secure student profiles.
 
 ## ✨ Features
 
-### 👨‍🏫 Teacher Module
-- **Live Attendance Camera:** Instantly scan the classroom to capture multiple student faces in a single frame. Recognized students are automatically marked present and added to the semester's final attendance logs.
-- **Student Verification Center:** Professors can review, approve, or reject "Update Information" requests from students (such as face data refresh or contact changes).
-- **Secure Authentication:** Dedicated login and registration flows for academic staff.
-- **Records Dashboard:** Easy access to administrative logs and class statistics.
-
 ### 👨‍🎓 Student Module
-- **Biometric Registration:** Students securely register by providing their Face Data and University Roll/ID numbers.
-- **Dynamic Dashboard:** Real-time visibility into personal attendance statistics and current status.
-- **Request Information Update:** Submit active requests to update face data (using the device camera) or profile information, which enters a pending state until verified by a teacher.
+- **Biometric Registration**: Securely register using **Firebase Authentication**. Students capture their face data using a custom in-app camera system.
+- **Dynamic Dashboard**: Real-time visibility into attendance statistics, pulled directly from **Cloud Firestore**.
+- **Profile Image Management**: Students can update their profile picture at any time. Images are securely hosted on **Firebase Cloud Storage**.
+- **Live Camera Capture**: A custom camera interface with a live viewfinder, face positioning guide, and front/back toggle.
+
+### 👨‍🏫 Teacher Module (Planned/In Progress)
+- **Live Attendance Camera**: Instantly scan the classroom to capture multiple student faces. Recognized students are automatically marked present.
+- **Student Verification Center**: Review and approve student information update requests.
+- **Secure Authentication**: Dedicated staff login flows.
 
 ### 🎨 UI / UX Highlights
-- **Premium Aesthetics:** A cohesive dark theme accented with vibrant, modern gradients (e.g., Purple & Teal).
-- **Smooth Navigation:** Animated splash screens, clean TabBars for segmenting user roles, and glassmorphism elements.
-- **Native Hardware Integration:** Built-in support targeting the native `image_picker` API to reliably capture face data across platforms.
+- **Premium Aesthetics**: Sleek dark theme with modern glassmorphism elements and vibrant teal/purple accents.
+- **Live Viewfinder**: Custom camera experience [CameraCaptureScreen] providing a high-quality, professional face data capture flow.
+- **Reactive UI**: State automatically updates across the app when profile data or images change.
 
 ---
 
@@ -26,21 +26,18 @@ A modern, AI-ready mobile application built with **Flutter** to streamline class
 
 ```text
 lib/
-├── main.dart                          # Application entry point & Routing setup
+├── main.dart                          # App entry, Routing & AuthWrapper
 ├── theme/
-│   └── app_theme.dart                 # Core Design System, Colors, and Typography
+│   └── app_theme.dart                 # Design System & Material 3 implementation
 ├── screens/
 │   ├── splash_screen.dart             # Animated initial splash
+│   ├── common/
+│   │   └── camera_capture_screen.dart # Custom Live Camera + Preview System
 │   ├── auth/
-│   │   ├── login_screen.dart          # Unified Login Interface
-│   │   └── register_screen.dart       # Split Registration (Teacher / Student)
-│   ├── student/
-│   │   ├── student_dashboard.dart     # Student Stats & Actions
-│   │   └── update_info_screen.dart    # Request data modification
-│   └── teacher/
-│       ├── teacher_dashboard.dart     # Teacher shortcuts & Overviews
-│       ├── attendance_camera_screen.dart # Live View for Face detection attendance
-│       └── verify_updates_screen.dart # Approval center for student requests
+│   │   ├── login_screen.dart          # Firebase Login Interface
+│   │   └── register_screen.dart       # Firebase Account Creation
+│   └── student/
+│       └── student_dashboard.dart     # Firestore-driven Stats & Profile updates
 ```
 
 ---
@@ -48,32 +45,53 @@ lib/
 ## 🚀 Getting Started
 
 ### Prerequisites
-- [Flutter SDK](https://docs.flutter.dev/get-started/install) (latest stable version recommended)
-- Android Studio / Xcode for emulators and building.
-- A physical Android / iOS device OR an emulator with a functional camera configured.
+- [Flutter SDK](https://docs.flutter.dev/get-started/install)
+- [Firebase CLI](https://firebase.google.com/docs/cli) (required for backend configuration)
+- Node.js (for Firebase tools)
 
-### Installation
+### Installation & Backend Setup
 
 1. **Clone the repository**
-```bash
-git clone https://github.com/shamantashafa/cls.git
-cd cls
-```
+   ```bash
+   git clone https://github.com/shamantashafa/cls.git
+   cd cls
+   ```
 
-2. **Fetch Dependencies**
-```bash
-flutter pub get
-```
+2. **Initialize Firebase**
+   This project uses `flutterfire` to manage configuration. You must link it to your own Firebase project:
+   ```bash
+   # Login to Firebase
+   firebase login
 
-3. **Run the Application**
-```bash
-flutter run
-```
+   # Activate the CLI
+   dart pub global activate flutterfire_cli
 
-*Note: Since this app requires native camera capabilities (`image_picker`), ensure that your simulator has access to a simulated or actual webcam. On Windows testing, if the primary camera query fails, it gracefully falls back to a gallery picture selector.*
+   # Configure the app
+   flutterfire configure
+   ```
+
+3. **Enable Services**
+   In your Firebase Console, ensure the following are enabled:
+   - **Authentication**: Email/Password provider.
+   - **Firestore Database**: Start in test mode.
+   - **Cloud Storage**: Start in test mode.
+
+4. **Run the App**
+   ```bash
+   flutter pub get
+   flutter run
+   ```
 
 ---
 
-## 🔐 Permissions Configured
-- **Android:** `<uses-permission android:name="android.permission.CAMERA"/>`
-- **iOS:** `NSCameraUsageDescription` is enabled in `Info.plist` for secure facial data uploads.
+## 🔐 Configuration & Permissions
+- **Android**: Camera permissions are pre-configured in `AndroidManifest.xml`. Ensure `minSdkVersion` is set to **23** in `android/app/build.gradle`.
+- **Windows**: Webcam support is enabled via the `camera` plugin. Ensure your system privacy settings allow camera access for desktop apps.
+- **Firebase**: The project includes a dummy `firebase_options.dart`. **You must run `flutterfire configure`** to generate your unique cloud API keys.
+
+---
+
+## 📦 Dependencies
+- `firebase_auth`, `cloud_firestore`, `firebase_storage` for backend services.
+- `camera` and `path_provider` for the custom capture system.
+- `shared_preferences` for session persistence.
