@@ -1,10 +1,9 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:camera/camera.dart';
+import '../common/camera_capture_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:image_picker/image_picker.dart';
 import '../../theme/app_theme.dart';
 
 class StudentDashboard extends StatefulWidget {
@@ -21,7 +20,6 @@ class _StudentDashboardState extends State<StudentDashboard> {
   bool _isLoading = true;
   bool _isUploadingImage = false;
 
-  final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
@@ -58,75 +56,15 @@ class _StudentDashboardState extends State<StudentDashboard> {
   }
 
   Future<void> _pickAndPreviewImage() async {
-    try {
-      XFile? image;
-      try {
-        image = await _picker.pickImage(
-          source: ImageSource.camera,
-          preferredCameraDevice: CameraDevice.front,
-          maxWidth: 800,
-          maxHeight: 800,
-          imageQuality: 80,
-        );
-      } catch (e) {
-        image = await _picker.pickImage(
-          source: ImageSource.gallery,
-          maxWidth: 800,
-          maxHeight: 800,
-          imageQuality: 80,
-        );
-      }
+    final XFile? image = await Navigator.push<XFile>(
+      context,
+      MaterialPageRoute(builder: (context) => const CameraCaptureScreen()),
+    );
 
-      if (image == null) return;
-      if (!mounted) return;
+    if (image == null) return;
+    if (!mounted) return;
 
-      // Show preview dialog
-      final bool? confirm = await showDialog<bool>(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) {
-          return AlertDialog(
-            backgroundColor: AppTheme.surfaceColor,
-            title: const Text('Confirm Profile Image', style: TextStyle(color: Colors.white)),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: kIsWeb 
-                      ? Image.network(image!.path, height: 200, width: 200, fit: BoxFit.cover)
-                      : Image.file(File(image!.path), height: 200, width: 200, fit: BoxFit.cover),
-                ),
-                const SizedBox(height: 16),
-                const Text('Do you want to save this image as your profile picture?', style: TextStyle(color: Colors.white70, fontSize: 14)),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false), // Retake
-                child: const Text('Retake', style: TextStyle(color: Colors.white60)),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context, true), // Confirm
-                style: ElevatedButton.styleFrom(backgroundColor: AppTheme.accentColor),
-                child: const Text('Confirm', style: TextStyle(fontWeight: FontWeight.bold)),
-              ),
-            ],
-          );
-        },
-      );
-
-      if (confirm == true) {
-        await _uploadImageToStorage(image);
-      } else {
-        // User wants to retake, call it again
-        _pickAndPreviewImage();
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error picking image: $e'), backgroundColor: Colors.redAccent));
-      }
-    }
+    await _uploadImageToStorage(image);
   }
 
   Future<void> _uploadImageToStorage(XFile file) async {

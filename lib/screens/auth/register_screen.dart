@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:camera/camera.dart';
+import '../common/camera_capture_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../theme/app_theme.dart';
@@ -21,7 +22,6 @@ class _RegisterScreenState extends State<RegisterScreen> with SingleTickerProvid
   final TextEditingController _passwordController = TextEditingController();
   
   bool _isPasswordVisible = false;
-  final ImagePicker _picker = ImagePicker();
   bool _isFaceCaptured = false;
   bool _isLoading = false;
 
@@ -116,36 +116,20 @@ class _RegisterScreenState extends State<RegisterScreen> with SingleTickerProvid
   }
 
   Future<void> _captureFace() async {
-    try {
-      XFile? image;
-      try {
-        image = await _picker.pickImage(
-          source: ImageSource.camera,
-          preferredCameraDevice: CameraDevice.front,
-        );
-      } catch (e) {
-        image = await _picker.pickImage(source: ImageSource.gallery);
-      }
-      
-      if (image != null) {
-        setState(() {
-          _isFaceCaptured = true;
-        });
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Face data captured successfully.'),
-              backgroundColor: AppTheme.accentColor,
-            ),
-          );
-        }
-      }
-    } catch (e) {
+    final XFile? result = await Navigator.push<XFile>(
+      context,
+      MaterialPageRoute(builder: (context) => const CameraCaptureScreen()),
+    );
+    
+    if (result != null) {
+      setState(() {
+        _isFaceCaptured = true;
+      });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Action failed: $e'),
-            backgroundColor: Colors.redAccent,
+          const SnackBar(
+            content: Text('Face data captured successfully.'),
+            backgroundColor: AppTheme.accentColor,
           ),
         );
       }
