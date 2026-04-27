@@ -1,4 +1,5 @@
 import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 
@@ -151,7 +152,9 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen> {
           // Camera Preview or Image Review
           Positioned.fill(
             child: _capturedFile != null
-                ? Image.file(File(_capturedFile!.path), fit: BoxFit.cover)
+                ? (kIsWeb
+                    ? Image.network(_capturedFile!.path, fit: BoxFit.cover)
+                    : Image.file(File(_capturedFile!.path), fit: BoxFit.cover))
                 : CameraPreview(_controller!),
           ),
 

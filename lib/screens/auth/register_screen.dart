@@ -85,7 +85,8 @@ class _RegisterScreenState extends State<RegisterScreen> with SingleTickerProvid
           Navigator.pop(context); // Go back or let AuthWrapper take over
         }
       } on FirebaseAuthException catch (e) {
-        String message = 'An error occurred during registration.';
+        debugPrint('FirebaseAuthException: ${e.code} - ${e.message}');
+        String message = 'Authentication error occurred.';
         if (e.code == 'weak-password') {
           message = 'The password provided is too weak.';
         } else if (e.code == 'email-already-in-use') {
@@ -98,6 +99,23 @@ class _RegisterScreenState extends State<RegisterScreen> with SingleTickerProvid
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(message), backgroundColor: Colors.red),
+          );
+        }
+      } on FirebaseException catch (e) {
+        // This catches Firestore errors like missing permissions/rules!
+        debugPrint('FirebaseException [${e.plugin}]: ${e.code} - ${e.message}');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Database Error: ${e.message}'), backgroundColor: Colors.red),
+          );
+        }
+      } catch (e, stackTrace) {
+        // This catches any other unexpected Dart/Flutter error
+        debugPrint('Unexpected Error: $e');
+        debugPrint('Stacktrace: $stackTrace');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('An unexpected error occurred: $e'), backgroundColor: Colors.red),
           );
         }
       } finally {
