@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'firebase_options.dart';
 import 'theme/app_theme.dart';
 import 'screens/splash_screen.dart';
@@ -60,7 +61,23 @@ class AuthWrapper extends StatelessWidget {
           if (user == null) {
             return const LoginScreen();
           }
-          return const StudentDashboard();
+          
+          // Check if user is a teacher or student
+          return FutureBuilder<DocumentSnapshot>(
+            future: FirebaseFirestore.instance.collection('teachers').doc(user.uid).get(),
+            builder: (context, roleSnapshot) {
+              if (roleSnapshot.connectionState == ConnectionState.done) {
+                if (roleSnapshot.hasData && roleSnapshot.data!.exists) {
+                  return const TeacherDashboard();
+                }
+                // If not in teachers, assume student for now (or check students collection)
+                return const StudentDashboard();
+              }
+              return const Scaffold(
+                body: Center(child: CircularProgressIndicator()),
+              );
+            },
+          );
         }
         return const Scaffold(
           body: Center(

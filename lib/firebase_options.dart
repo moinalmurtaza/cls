@@ -42,37 +42,38 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'REPLACE_ME_API_KEY',
-    appId: 'REPLACE_ME_APP_ID',
-    messagingSenderId: 'REPLACE_ME_SENDER_ID',
-    projectId: 'REPLACE_ME_PROJECT_ID',
-    authDomain: 'REPLACE_ME_AUTH_DOMAIN',
-    storageBucket: 'REPLACE_ME_STORAGE_BUCKET',
+    apiKey: 'AIzaSyDU921K4JZbdpcbg0x8BIkxraY2Kkc_l1E1',
+    appId: '1:781348051032:web:fb87b01dac58b737ea522d',
+    messagingSenderId: '781348051032',
+    projectId: 'faceattendanceapp-50e7ee3d',
+    authDomain: 'faceattendanceapp-50e7ee3d.firebaseapp.com',
+    storageBucket: 'faceattendanceapp-50e7ee3d.firebasestorage.app',
+    databaseURL: 'https://faceattendanceapp-50e7ee3d-default-rtdb.asia-southeast1.firebasedatabase.app',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'REPLACE_ME_API_KEY',
-    appId: 'REPLACE_ME_APP_ID',
-    messagingSenderId: 'REPLACE_ME_SENDER_ID',
-    projectId: 'REPLACE_ME_PROJECT_ID',
-    storageBucket: 'REPLACE_ME_STORAGE_BUCKET',
+    apiKey: 'REPLACE_ME_ANDROID_API_KEY',
+    appId: 'REPLACE_ME_ANDROID_APP_ID',
+    messagingSenderId: '781348051032',
+    projectId: 'faceattendanceapp-50e7ee3d',
+    storageBucket: 'faceattendanceapp-50e7ee3d.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'REPLACE_ME_API_KEY',
-    appId: 'REPLACE_ME_APP_ID',
-    messagingSenderId: 'REPLACE_ME_SENDER_ID',
-    projectId: 'REPLACE_ME_PROJECT_ID',
-    storageBucket: 'REPLACE_ME_STORAGE_BUCKET',
+    apiKey: 'REPLACE_ME_IOS_API_KEY',
+    appId: 'REPLACE_ME_IOS_APP_ID',
+    messagingSenderId: '781348051032',
+    projectId: 'faceattendanceapp-50e7ee3d',
+    storageBucket: 'faceattendanceapp-50e7ee3d.firebasestorage.app',
     iosBundleId: 'REPLACE_ME_BUNDLE_ID',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'REPLACE_ME_API_KEY',
-    appId: 'REPLACE_ME_APP_ID',
-    messagingSenderId: 'REPLACE_ME_SENDER_ID',
-    projectId: 'REPLACE_ME_PROJECT_ID',
-    storageBucket: 'REPLACE_ME_STORAGE_BUCKET',
+    apiKey: 'REPLACE_ME_IOS_API_KEY',
+    appId: 'REPLACE_ME_IOS_APP_ID',
+    messagingSenderId: '781348051032',
+    projectId: 'faceattendanceapp-50e7ee3d',
+    storageBucket: 'faceattendanceapp-50e7ee3d.firebasestorage.app',
     iosBundleId: 'REPLACE_ME_BUNDLE_ID',
   );
 }

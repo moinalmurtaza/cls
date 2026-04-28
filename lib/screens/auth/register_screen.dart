@@ -15,11 +15,16 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final _studentFormKey = GlobalKey<FormState>();
+  final _teacherFormKey = GlobalKey<FormState>();
   
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _idController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
+  final TextEditingController _teacherNameController = TextEditingController();
+  final TextEditingController _teacherEmailController = TextEditingController();
+  final TextEditingController _teacherPasswordController = TextEditingController();
   
   bool _isPasswordVisible = false;
   bool _isFaceCaptured = false;
@@ -38,6 +43,9 @@ class _RegisterScreenState extends State<RegisterScreen> with SingleTickerProvid
     _idController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _teacherNameController.dispose();
+    _teacherEmailController.dispose();
+    _teacherPasswordController.dispose();
     super.dispose();
   }
 
@@ -71,6 +79,7 @@ class _RegisterScreenState extends State<RegisterScreen> with SingleTickerProvid
           'id': _idController.text.trim(), // Student roll number
           'name': _nameController.text.trim(),
           'email': _emailController.text.trim(),
+          'role': 'student',
           'created_at': FieldValue.serverTimestamp(),
           // In real app, store face data URL here
         });
@@ -126,10 +135,59 @@ class _RegisterScreenState extends State<RegisterScreen> with SingleTickerProvid
         }
       }
     } else {
-      // Teacher registration (currently skipped or mocked)
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Teacher registration not fully implemented yet.')),
-      );
+      // Teacher registration logic
+      if (!_teacherFormKey.currentState!.validate()) return;
+
+      setState(() {
+        _isLoading = true;
+      });
+
+      try {
+        UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: _teacherEmailController.text.trim(),
+          password: _teacherPasswordController.text.trim(),
+        );
+
+        String uid = userCredential.user!.uid;
+
+        await FirebaseFirestore.instance.collection('teachers').doc(uid).set({
+          'name': _teacherNameController.text.trim(),
+          'email': _teacherEmailController.text.trim(),
+          'role': 'teacher',
+          'created_at': FieldValue.serverTimestamp(),
+        });
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Teacher registration successful!'),
+              backgroundColor: AppTheme.accentColor,
+            ),
+          );
+          Navigator.pop(context);
+        }
+      } on FirebaseAuthException catch (e) {
+        debugPrint('FirebaseAuthException: ${e.code} - ${e.message}');
+        String message = e.message ?? 'Authentication error occurred.';
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(message), backgroundColor: Colors.red),
+          );
+        }
+      } catch (e) {
+        debugPrint('Unexpected Error: $e');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('An unexpected error occurred: $e'), backgroundColor: Colors.red),
+          );
+        }
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      }
     }
   }
 
@@ -250,39 +308,48 @@ class _RegisterScreenState extends State<RegisterScreen> with SingleTickerProvid
   }
 
   Widget _buildTeacherForm() {
-    return Column(
-      children: [
-        const TextField(
-          decoration: InputDecoration(labelText: 'Full Name', prefixIcon: Icon(Icons.person_outline)),
-        ),
-        const SizedBox(height: 16),
-        const TextField(
-          decoration: InputDecoration(labelText: 'Email Address', prefixIcon: Icon(Icons.email_outlined)),
-          keyboardType: TextInputType.emailAddress,
-        ),
-        const SizedBox(height: 16),
-        TextField(
-          decoration: InputDecoration(
-            labelText: 'Password',
-            prefixIcon: const Icon(Icons.lock_outline),
-            suffixIcon: IconButton(
-              icon: Icon(_isPasswordVisible ? Icons.visibility : Icons.visibility_off, color: Colors.white70),
-              onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
+    return Form(
+      key: _teacherFormKey,
+      child: Column(
+        children: [
+          TextFormField(
+            controller: _teacherNameController,
+            decoration: const InputDecoration(labelText: 'Full Name', prefixIcon: Icon(Icons.person_outline)),
+            validator: (value) => value == null || value.trim().isEmpty ? 'Enter your name' : null,
+          ),
+          const SizedBox(height: 16),
+          TextFormField(
+            controller: _teacherEmailController,
+            decoration: const InputDecoration(labelText: 'Email Address', prefixIcon: Icon(Icons.email_outlined)),
+            keyboardType: TextInputType.emailAddress,
+            validator: (value) => value == null || !value.contains('@') ? 'Enter a valid email' : null,
+          ),
+          const SizedBox(height: 16),
+          TextFormField(
+            controller: _teacherPasswordController,
+            decoration: InputDecoration(
+              labelText: 'Password',
+              prefixIcon: const Icon(Icons.lock_outline),
+              suffixIcon: IconButton(
+                icon: Icon(_isPasswordVisible ? Icons.visibility : Icons.visibility_off, color: Colors.white70),
+                onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
+              ),
             ),
+            obscureText: !_isPasswordVisible,
+            validator: (value) => value == null || value.length < 6 ? 'Password must be at least 6 characters' : null,
           ),
-          obscureText: !_isPasswordVisible,
-        ),
-        const SizedBox(height: 32),
-        SizedBox(
-          width: double.infinity,
-          child: ElevatedButton(
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Teacher registration not implemented here.')));
-            },
-            child: const Text('Register as Teacher', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 32),
+          SizedBox(
+            width: double.infinity,
+            child: _isLoading 
+                ? const Center(child: CircularProgressIndicator()) 
+                : ElevatedButton(
+                    onPressed: _handleRegister,
+                    child: const Text('Register as Teacher', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
